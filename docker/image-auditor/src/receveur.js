@@ -1,12 +1,11 @@
 var dgram = require('dgram');
 var server = dgram.createSocket('udp4');
-var net = require('net');
-var moment = require('moment')
+
 
 const TCP_PORT = 2205;
 
 const PROTOCOL_MULTICAST_ADDRESS = "239.255.22.5";
-const PROTOCOL_PORT = 9907;
+const PROTOCOL_PORT = 2205;
 
 var songs = new Map();
 songs.set( "ti-ta-ti","piano");
@@ -17,9 +16,14 @@ songs.set( "boum-boum","drum");
 
 var musicians = new Map();
 
+var net = require('net');
+var moment = require('moment')
+
 server.bind(PROTOCOL_PORT, () => {
     server.addMembership(PROTOCOL_MULTICAST_ADDRESS);
 });
+
+
 
 server.on('message', (msg, source) => {
     console.log(msg);
@@ -53,7 +57,7 @@ var TCPserver = net.createServer((socket) => {
 
 TCPserver.listen(TCP_PORT);
 
-function cleanPeriod(){
+function reset(){
     musicians.forEach((item, key, musicians) => {
         var diffSeconds = moment().diff(moment(item.lastSend), "seconds");
         console.log(diffSeconds)
@@ -63,4 +67,4 @@ function cleanPeriod(){
     })
 }
 
-setInterval(cleanPeriod, 100);
+setInterval(reset, 100);
